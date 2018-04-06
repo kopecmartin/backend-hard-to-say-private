@@ -4,26 +4,11 @@ import argparse
 from PIL import Image
 import otsu
 import basic_threshold as bt
-from tools import tools
-# import sys
 import numpy as np
-import cv2
 import detection
 from AABBlib import max_length
 from AABBlib import convex_hull
 import csv
-
-
-
-def load_tiff_image(filepath):
-    img = Image.open(filepath)
-
-    w = img.size[0]
-    h = img.size[1]
-
-    pix = img.load()
-    print(w, h, pix)
-    return pix
 
 
 def get_threshold_by_otsu(img):
@@ -42,15 +27,21 @@ def parse_args():
 if __name__ == '__main__':
     args = parse_args()
     print(args)
-    # load_tiff_image(args.image_path)
     img = Image.open(args.image_path)
 
     threshold = get_threshold_by_otsu(img)
     print("threshold is: ", threshold)
-    img_thres = bt.threshold(threshold, img)
 
-    ocv_img = np.array(img_thres)
-    bboxes = detection.detect(ocv_img)
+    ocv_img = np.array(img)
+    img_thres = bt.threshold(threshold, ocv_img)
+    # debug - save img after thresholding
+    # import scipy
+    # scipy.misc.imsave('outputNumpy.jpg', img_thres)
+
+    # mask orig image with thresholded one - see differences
+    # tools.mask_thresh(args.image_path, './threshed_pic.bmp')
+
+    bboxes = detection.detect(img_thres)
 
     box_width = []
     box_height = []
@@ -67,16 +58,12 @@ if __name__ == '__main__':
         max_len.append(max_l)
         max_points.append(max_p)
 
-    zipped = zipped = zip(range(1, len(max_len)+1), box_width, box_height, max_len)
+    zipped = zipped = zip(range(1, len(max_len) + 1),
+                          box_width, box_height, max_len)
     with open(args.csv_path, 'w') as out_csv:
         writer = csv.writer(out_csv)
-        writer.writerow(['Part #', 'Width', 'Height', 'Max Length', 'Thickness'])
+        writer.writerow(['Part #', 'Width', 'Height',
+                         'Max Length', 'Thickness'])
         writer.writerows(zipped)
 
-
-
     from IPython import embed; embed()
-    # show file after thresholding
-    #img_thres.show()
-    #img_thres.save('./threshed_pic.bmp')
-    #tools.mask_thresh(args.image_path, './threshed_pic.bmp')

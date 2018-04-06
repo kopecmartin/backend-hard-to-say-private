@@ -1,31 +1,34 @@
 
 from multiprocessing import Process, Manager
-
-
-# class Image(object):
-#     def __init__(self, a, p):
-#         self.lst = [a] * p
-#         print("FAKE:", self.lst)
-
-#     size = {0: 8, 1: 10}
-
-#     def getpixel(self, h, w):
-#         return self.lst[h][w]
+import numpy
 
 
 def partial_thresholding(procnum, return_dict, h_from, lines_no, t, image):
-    intensity_array = []
-    # print("going from: ", procnum, h_from, lines_no + h_from)
-    for h in range(h_from, h_from + lines_no):
-        for w in range(0, image.size[1]):  # size[1] = width
-            intensity = image.getpixel((h, w))
-            print("fucking : ", intensity)
+    """Do thresholding only on certain rows.intensity
+
+    The function is appropriate for multiprocessing where each process
+    can thresholds pixels on different lines.
+
+    :param procnum: number of the process
+    :type procnum: int
+    :param return_dict: Shared dict among processes
+    :param h_from: starting index of a row
+    :param lines_no: amount of lines which will be processed by this process
+    :type lines_no: int
+    :param t: threshold
+    :type t: int
+    :param image: 2D array containing pixels
+    :type image: numpy.Array
+    """
+    intensity_array = numpy.zeros((lines_no, image.shape[1]))
+    for h in range(0, lines_no):
+        for w in range(0, intensity_array.shape[1]):  # size[1] = width
+            intensity = image[h + h_from][w]
             if (intensity <= t):
                 x = 0
             else:
                 x = 255
-            intensity_array.append(x)
-    # print("i have ", procnum, intensity_array)
+            intensity_array[h][w] = x
     return_dict[procnum] = intensity_array
 
 
@@ -39,11 +42,8 @@ def threshold(t, image):
     :rtype: ImageFile
     """
     # let's devide height to 4 parts
-    height_total = image.size[0]
+    height_total = image.shape[0]
     quarter = int(height_total / 4)
-    print("prop: ", image.size[1], image.size[0])
-    print("total: ", height_total)
-    print("quarter: ", quarter)
 
     h_from = 0
     is_total_height = 0
@@ -56,7 +56,6 @@ def threshold(t, image):
         if i == 3:
             quarter = height_total - is_total_height
         is_total_height += quarter
-        print(i, h_from, quarter)
         p = Process(target=partial_thresholding,
                     args=(i, return_dict, h_from, quarter, t, image))
         h_from += quarter
@@ -68,12 +67,7 @@ def threshold(t, image):
         p.join()
 
     # let's put data together
-    intensity_array = []
-    print(len(return_dict))
-    for i in range(0, 4):
-        intensity_array.extend(return_dict[i])
+    image_th = numpy.concatenate((return_dict[0], return_dict[1],
+                                  return_dict[2], return_dict[3]), axis=0)
 
-    image.putdata(intensity_array)
-    print("prop: ", image.size[1], image.size[0])
-
-    return image
+    return image_th
