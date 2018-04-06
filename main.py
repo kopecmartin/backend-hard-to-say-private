@@ -58,12 +58,11 @@ if __name__ == '__main__':
         max_len.append(max_l)
         max_points.append(max_p)
 
-    zipped = zipped = zip(range(1, len(max_len) + 1),
-                          box_width, box_height, max_len)
+    zipped = zip(range(1, len(max_len) + 1),
+                 box_width, box_height, max_len)
+
     with open(args.csv_path, 'w') as out_csv:
         writer = csv.writer(out_csv)
         writer.writerow(['Part #', 'Width', 'Height',
                          'Max Length', 'Thickness'])
         writer.writerows(zipped)
-
-    from IPython import embed; embed()
