@@ -1,11 +1,17 @@
 """ Operation over line equation
 """
 
-def get_line_eq(x1, y1, x2, y2):
+def get_line_eq(points):
     """ Compute line equation from given two points
     """
     #    A   x +    B   y +      C      = 0
     # (y1-y2)x + (x2-x1)y + (x1y2-x2y1) = 0
+    # points = [[x1, y1], [x2, y2]]
+    x1 = points[0][0]
+    y1 = points[0][1]
+    x2 = points[1][0]
+    y2 = points[1][1]
+
     return {'a':(y1-y2), 'b':(x2-x1), 'c':(x1*y2-x2*y1)}
 
 

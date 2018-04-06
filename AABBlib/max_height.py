@@ -30,14 +30,17 @@ def draw_line(x0, y0, x1, y1):
 
 def max_thickness(equation, edge, box):
     max_value = 0
+    points_below_norm = []
     for A in edge:
         for B in edge:
-            if A == B:
+            if A == B and B in points_below_norm:
                 continue
-            norm = line.get_line_eq(A[0], A[1], B[0], B[1])
+            points_below_norm.append(B)
+            norm = line.get_line_eq([A, B])
             if line.is_normal(equation, norm):
                 if is_uninterrupted(box, norm, A[0], A[1], B[0], B[1]):
                     max_value = max_length._get_len(A, B)
             else:
+                points_below_norm = []
                 continue
     return max_value
