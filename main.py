@@ -1,9 +1,10 @@
-#!/usr/bin/python3
+#!/usr/bin/env python 3
 
 import argparse
 from PIL import Image
 import otsu
 import basic_threshold as bt
+from tools import tools
 # import sys
 # import numpy as np
 
@@ -40,8 +41,8 @@ if __name__ == '__main__':
 
     threshold = get_threshold_by_otsu(img)
     print ("threshold is: ", threshold)
-    #img_thres = bt.threshold(threshold, img)
+    img_thres = bt.threshold(threshold, img)
     # show file after thresholding
     #img_thres.show()
-    # show orig file
-    #img.show()
+    #img_thres.save('./threshed_pic.bmp')
+    #tools.mask_thresh(args.image_path, './threshed_pic.bmp')

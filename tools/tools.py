@@ -2,9 +2,9 @@
 import cv2
 
 
-def mask_thresh(input, threshed):
-    im = cv2.imread(input)
-    thresh = cv2.imread(threshed)
+def mask_thresh(orig_img_path, threshed_img_path):
+    im = cv2.imread(orig_img_path)
+    thresh = cv2.imread(threshed_img_path)
 
     # to grayscale
     im_gray = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
