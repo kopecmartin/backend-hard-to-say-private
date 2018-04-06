@@ -2,7 +2,7 @@
 import numpy as np
 
 
-def arrays():
+def bounded_boxes():
     arr_easy = np.array(
         [[0, 0, 0, 0, 1, 1, 1, 0, 0, 0],
          [0, 1, 1, 1, 1, 1, 1, 1, 0, 0],
