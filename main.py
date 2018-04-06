@@ -6,7 +6,12 @@ import otsu
 import basic_threshold as bt
 from tools import tools
 # import sys
-# import numpy as np
+import numpy as np
+import cv2
+import detection
+from AABBlib import max_length
+from AABBlib import convex_hull
+
 
 
 def load_tiff_image(filepath):
@@ -40,8 +45,30 @@ if __name__ == '__main__':
     img = Image.open(args.image_path)
 
     threshold = get_threshold_by_otsu(img)
-    print ("threshold is: ", threshold)
+    print("threshold is: ", threshold)
     img_thres = bt.threshold(threshold, img)
+
+    ocv_img = np.array(img_thres)
+    bboxes = detection.detect(ocv_img)
+
+    box_width = []
+    box_height = []
+    max_len = []
+    max_points = []
+    edge_list = []
+    for bbox in bboxes:
+        edge_list.append(convex_hull.convex_hull(bbox))
+        box_height.append(bbox.shape[0])
+        box_width.append(bbox.shape[1])
+
+    for edges in edge_list:
+        max_l, max_p = max_length.max_length(edges)
+        max_len.append(max_l)
+        max_points.append(max_p)
+
+    zipped = zipped = zip(box_width, box_height, max_len)
+
+    from IPython import embed; embed()
     # show file after thresholding
     #img_thres.show()
     #img_thres.save('./threshed_pic.bmp')
