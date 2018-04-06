@@ -9,13 +9,11 @@ import detection
 from AABBlib import max_length
 from AABBlib import convex_hull
 import csv
+import cv2
 
 
 def get_threshold_by_otsu(img):
-    # convert the image to black and white
-    bw_img = img.convert('L')
-    return otsu.otsu(bw_img)
-
+    return otsu.otsu(img)
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -26,14 +24,12 @@ def parse_args():
 
 if __name__ == '__main__':
     args = parse_args()
-    print(args)
-    img = Image.open(args.image_path)
+    img = cv2.imread(args.image_path, 0)
 
     threshold = get_threshold_by_otsu(img)
     print("threshold is: ", threshold)
 
-    ocv_img = np.array(img)
-    img_thres = bt.threshold(threshold, ocv_img)
+    img_thres = bt.threshold(threshold, img)
     # debug - save img after thresholding
     # import scipy
     # scipy.misc.imsave('outputNumpy.jpg', img_thres)
@@ -66,3 +62,4 @@ if __name__ == '__main__':
         writer.writerow(['Part #', 'Width', 'Height',
                          'Max Length', 'Thickness'])
         writer.writerows(zipped)
+    cv2.imwrite('thresh' + args.image_path, img_thres)

@@ -1,24 +1,38 @@
-#!/usr/bin/env python3
+
 import numpy as np
+import decimal
 
 
 def otsu(image):
-    maximum = -1
-    threshold = -1
+    total = image.size
+    current_max = 0
+    threshold = 0
+    sumT = 0
+    sumF = 0
+    sumB = 0
 
-    hist, bins = np.histogram(image, np.array(range(0, 256)))
+    hist = np.histogram(image, range(0, 257))
+    for i in range(0, 256):
+        sumT += i * hist[0][i]
 
-    mean_weight = 1.0/image.size
-    for i in bins[1:-1]:    # 1 - 254
-        weightB = np.sum(hist[:i]) * mean_weight
-        weightF = np.sum(hist[i:]) * mean_weight
+    weightB = 0
+    weightF = 0
+    varBetween = 0
+    meanB = 0
+    meanF = 0
 
-        meanB = np.mean(hist[:i])
-        meanF = np.mean(hist[i:])
-
-        between = weightB * weightF * (meanB - meanF) ** 2
-
-        if between > maximum:
-            maximum = between
+    for i in range(0, 256):
+        weightB += hist[0][i]
+        weightF = total - weightB
+        if weightF == 0:
+            break
+        sumB += i * hist[0][i]
+        sumF = sumT - sumB
+        meanB = sumB / weightB
+        meanF = sumF / weightF
+        varBetween = weightB * weightF
+        varBetween *= (meanB - meanF) ** 2
+        if varBetween > current_max:
+            current_max = varBetween
             threshold = i
     return threshold
