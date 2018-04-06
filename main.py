@@ -2,8 +2,10 @@
 
 import argparse
 from PIL import Image
+import otsu
+import basic_threshold as bt
 # import sys
-# import numpy
+# import numpy as np
 
 
 def load_tiff_image(filepath):
@@ -17,6 +19,12 @@ def load_tiff_image(filepath):
     return pix
 
 
+def get_threshold_by_otsu(img):
+    # convert the image to black and white
+    bw_img = img.convert('L')
+    return otsu.otsu(bw_img)
+
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--image-path", required=True)
@@ -27,4 +35,13 @@ def parse_args():
 if __name__ == '__main__':
     args = parse_args()
     print(args)
-    load_tiff_image(args.image_path)
+    # load_tiff_image(args.image_path)
+    img = Image.open(args.image_path)
+
+    threshold = get_threshold_by_otsu(img)
+    print ("threshold is: ", threshold)
+    #img_thres = bt.threshold(threshold, img)
+    # show file after thresholding
+    #img_thres.show()
+    # show orig file
+    #img.show()
