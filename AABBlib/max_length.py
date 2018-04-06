@@ -21,4 +21,4 @@ def max_length(edge_list):
             max_points = len_dict['points']
             break
 
-    return round(max_len), max_points
+    return round(max_len, 2), max_points
