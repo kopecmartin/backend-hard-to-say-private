@@ -4,14 +4,13 @@ import cv2
 
 def mask_thresh(input, threshed):
     im = cv2.imread(input)
+    thresh = cv2.imread(threshed)
+
     # to grayscale
-    imgray = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
+    im_gray = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
+    thresh_gray = cv2.cvtColor(thresh, cv2.COLOR_BGR2GRAY)
 
-    # # Otsu's thresholding after Gaussian filtering
-    # blur = cv2.GaussianBlur(imgray, (5, 5), 0)
-    # ret, thresh = cv2.threshold(blur, 0, 255, cv2.THRESH_BINARY+cv2.THRESH_OTSU)
-
-    dst = cv2.addWeighted(imgray, 0.9, threshed, 0.1, 0)
+    dst = cv2.addWeighted(im_gray, 0.9, thresh_gray, 0.1, 0)
 
     cv2.imshow('masked', dst)
     cv2.waitKey(0)
