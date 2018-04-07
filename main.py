@@ -1,19 +1,18 @@
 #!/usr/bin/env python3
 
-import argparse
-from PIL import Image
-import otsu
-import basic_threshold as bt
-import numpy as np
-import detection
-from AABBlib import max_length
 from AABBlib import convex_hull
+from AABBlib import max_length
+import basic_threshold as bt
+import argparse
 import csv
 import cv2
+import detection
+import otsu
 
 
 def get_threshold_by_otsu(img):
     return otsu.otsu(img)
+
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -24,7 +23,9 @@ def parse_args():
 
 if __name__ == '__main__':
     args = parse_args()
-    img = cv2.imread(args.image_path, 0)
+    img = cv2.imread(args.image_path, 0)    # load as grayscale
+
+    img = cv2.GaussianBlur(img, (5, 5), 10)  # blur img - TODO: write own
 
     threshold = get_threshold_by_otsu(img)
     print("threshold is: ", threshold)
@@ -62,4 +63,4 @@ if __name__ == '__main__':
         writer.writerow(['Part #', 'Width', 'Height',
                          'Max Length', 'Thickness'])
         writer.writerows(zipped)
-    cv2.imwrite('thresh' + args.image_path, img_thres)
+    cv2.imwrite('thresh.tif', img_thres)    # dump threshed img
