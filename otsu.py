@@ -28,8 +28,11 @@ def otsu(image):
             break
         sumB += i * hist[0][i]
         sumF = sumT - sumB
-        meanB = sumB / weightB
-        meanF = sumF / weightF
+        print(sumB, weightB)
+        if weightB != 0:
+            meanB = sumB / weightB
+        if weightF != 0:
+            meanF = sumF / weightF
         varBetween = weightB * weightF
         varBetween *= (meanB - meanF) ** 2
         if varBetween > current_max:
