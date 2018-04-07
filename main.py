@@ -1,29 +1,17 @@
-#!/usr/bin/env python 3
+#!/usr/bin/env python3
 
-import argparse
-from PIL import Image
-import otsu
+from AABBlib import convex_hull
+from AABBlib import max_length
 import basic_threshold as bt
-from tools import tools
-# import sys
-# import numpy as np
-
-
-def load_tiff_image(filepath):
-    img = Image.open(filepath)
-
-    w = img.size[0]
-    h = img.size[1]
-
-    pix = img.load()
-    print(w, h, pix)
-    return pix
+import argparse
+import csv
+import cv2
+import detection
+import otsu
 
 
 def get_threshold_by_otsu(img):
-    # convert the image to black and white
-    bw_img = img.convert('L')
-    return otsu.otsu(bw_img)
+    return otsu.otsu(img)
 
 
 def parse_args():
@@ -35,14 +23,44 @@ def parse_args():
 
 if __name__ == '__main__':
     args = parse_args()
-    print(args)
-    # load_tiff_image(args.image_path)
-    img = Image.open(args.image_path)
+    img = cv2.imread(args.image_path, 0)    # load as grayscale
+
+    img = cv2.GaussianBlur(img, (5, 5), 10)  # blur img - TODO: write own
 
     threshold = get_threshold_by_otsu(img)
-    print ("threshold is: ", threshold)
+    print("threshold is: ", threshold)
+
     img_thres = bt.threshold(threshold, img)
-    # show file after thresholding
-    #img_thres.show()
-    #img_thres.save('./threshed_pic.bmp')
-    #tools.mask_thresh(args.image_path, './threshed_pic.bmp')
+    # debug - save img after thresholding
+    # import scipy
+    # scipy.misc.imsave('outputNumpy.jpg', img_thres)
+
+    # mask orig image with thresholded one - see differences
+    # tools.mask_thresh(args.image_path, './threshed_pic.bmp')
+
+    bboxes = detection.detect(img_thres)
+
+    box_width = []
+    box_height = []
+    max_len = []
+    max_points = []
+    edge_list = []
+    for bbox in bboxes:
+        edge_list.append(convex_hull.convex_hull(bbox))
+        box_height.append(bbox.shape[0])
+        box_width.append(bbox.shape[1])
+
+    for edges in edge_list:
+        max_l, max_p = max_length.max_length(edges)
+        max_len.append(max_l)
+        max_points.append(max_p)
+
+    zipped = zip(range(1, len(max_len) + 1),
+                 box_width, box_height, max_len)
+
+    with open(args.csv_path, 'w') as out_csv:
+        writer = csv.writer(out_csv)
+        writer.writerow(['Part #', 'Width', 'Height',
+                         'Max Length', 'Thickness'])
+        writer.writerows(zipped)
+    cv2.imwrite('thresh.tif', img_thres)    # dump threshed img
