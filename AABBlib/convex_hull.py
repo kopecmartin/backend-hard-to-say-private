@@ -1,5 +1,3 @@
-
-
 def _get_border_from_left(row):
     for i in range(0, len(row)):
         if row[i] != 0:
