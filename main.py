@@ -8,6 +8,7 @@ import csv
 import cv2
 import detection
 import otsu
+import blur
 
 
 def get_threshold_by_otsu(img):
@@ -34,7 +35,7 @@ if __name__ == '__main__':
         img = cv2.resize(img, (int(img.shape[1] * resize_percentage),
                                int(img.shape[0] * resize_percentage)))
 
-    img = cv2.GaussianBlur(img, (5, 5), 10)  # blur img - TODO: write own
+    img = blur.blur(img)
 
     threshold = get_threshold_by_otsu(img)
     print("threshold is: ", threshold)
