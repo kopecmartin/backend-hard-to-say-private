@@ -28,7 +28,7 @@ def otsu(image):
             break
         sumB += i * hist[0][i]
         sumF = sumT - sumB
-        print(sumB, weightB)
+
         if weightB != 0:
             meanB = sumB / weightB
         if weightF != 0:
