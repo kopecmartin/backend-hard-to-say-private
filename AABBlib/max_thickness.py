@@ -9,12 +9,13 @@ from fractions import Fraction
 def is_uninterrupted(box, equation, x1, y1, x2, y2):
     normal = draw_line(x1, y1, x2, y2)
     for point in normal:
-        if box[point[0]][point[1]] == 0:
+        if box[point[1]][point[0]] == 0:
             return False
     return True
 
 
 def draw_line(x0, y0, x1, y1):
+    print("{0} {1} {2} {3}".format(x0, y0, x1, y1))
     points = []
     rev = reversed
     if abs(y1 - y0) <= abs(x1 - x0):
@@ -25,6 +26,7 @@ def draw_line(x0, y0, x1, y1):
     leny = abs(y1 - y0)
     for i in range(leny + 1):
         points.append([*rev((round(Fraction(i, leny) * (x1 - x0)) + x0, (1 if y1 > y0 else -1) * i + y0))])
+
     return points
 
 
@@ -47,7 +49,7 @@ def max_thickness(points, edge, box):
 
     edge_below, edge_above = _split_along_line(line_eq, edge)
 
-    normal_eq = line.get_normal(line_eq, edge_above[len(edge_above)/2])
+    normal_eq = line.get_normal(line_eq, edge_above[int(len(edge_above)/2)])
 
     normal_above_left, normal_above_rigth = _split_along_line(normal_eq, edge_above)
     normal_below_left, normal_below_rigth = _split_along_line(normal_eq, edge_below)

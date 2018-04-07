@@ -2,6 +2,7 @@
 
 from AABBlib import convex_hull
 from AABBlib import max_length
+from AABBlib import max_thickness
 import basic_threshold as bt
 import argparse
 import csv
@@ -42,9 +43,11 @@ if __name__ == '__main__':
 
     box_width = []
     box_height = []
+    max_thick = []
     max_len = []
     max_points = []
     edge_list = []
+
     for bbox in bboxes:
         edge_list.append(convex_hull.convex_hull(bbox))
         box_height.append(bbox.shape[0])
@@ -55,8 +58,12 @@ if __name__ == '__main__':
         max_len.append(max_l)
         max_points.append(max_p)
 
+
+    for edges, bbox, point in zip(edge_list, bboxes, max_points):
+        max_thick.append(max_thickness.max_thickness(point, edges, bbox))
+
     zipped = zip(range(1, len(max_len) + 1),
-                 box_width, box_height, max_len)
+                 box_width, box_height, max_len, max_thick)
 
     with open(args.csv_path, 'w') as out_csv:
         writer = csv.writer(out_csv)
