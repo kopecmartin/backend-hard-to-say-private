@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 
-from AABBlib import max_thickness
-
 from AABBlib import detection
 from AABBlib import threshold
+
+# TODO: to class Detection
+from AABBlib import max_thickness
 
 import argparse
 import csv
@@ -61,7 +62,6 @@ if __name__ == '__main__':
         max_l, max_p = detector.max_length(edges)
         max_len.append(max_l * k)
         max_points.append(max_p)
-
 
     for edges, bbox, point in zip(edge_list, bboxes, max_points):
         max_thick.append(max_thickness.max_thickness(point, edges, bbox))
