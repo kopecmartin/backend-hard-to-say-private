@@ -125,5 +125,5 @@ class Threshold(object):
                 current_max = varBetween
                 threshold = i
 
-        self.threshold = threshold
+        self.threshold = threshold - 15
         return self

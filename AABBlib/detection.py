@@ -160,7 +160,6 @@ class Detector(object):
         return True
 
     def _draw_line(self, x0, y0, x1, y1):
-        print("{0} {1} {2} {3}".format(x0, y0, x1, y1))
         points = []
         rev = reversed
         if abs(y1 - y0) <= abs(x1 - x0):
@@ -204,7 +203,6 @@ class Detector(object):
                         value = self._get_len(a, b)
                         if value > max_value:
                             max_value = value
-
 
         for a in normal_above_rigth:
             for b in normal_below_rigth:
