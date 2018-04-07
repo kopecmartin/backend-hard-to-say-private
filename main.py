@@ -2,10 +2,6 @@
 
 from AABBlib import detection
 from AABBlib import threshold
-
-# TODO: to class Detection
-from AABBlib import max_thickness
-
 import argparse
 import csv
 import cv2
@@ -64,7 +60,7 @@ if __name__ == '__main__':
         max_points.append(max_p)
 
     for edges, bbox, point in zip(edge_list, bboxes, max_points):
-        max_thick.append(max_thickness.max_thickness(point, edges, bbox))
+        max_thick.append(round(detector.max_thickness(point, edges, bbox), 2))
 
     zipped = zip(range(1, len(max_len) + 1),
                  box_width, box_height, max_len, max_thick)

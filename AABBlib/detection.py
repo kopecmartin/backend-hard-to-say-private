@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from fractions import Fraction
 from scipy import ndimage
 import math
 
@@ -117,3 +118,101 @@ class Detector(object):
                 max_points = d['points']
 
         return round(max_len, 2), max_points
+
+    def _get_line_eq(self, points):
+        """ Compute line equation from given two points
+        """
+        #    A   x +    B   y +      C      = 0
+        # (y1-y2)x + (x2-x1)y + (x1y2-x2y1) = 0
+        # points = [[x1, y1], [x2, y2]]
+        x1 = points[0] [0]
+        y1 = points[0] [1]
+        x2 = points[1] [0]
+        y2 = points[1] [1]
+        return {'a':(y1-y2), 'b':(x2-x1), 'c':(x1*y2-x2*y1)}
+
+    def _is_below_line(self, line_eq, point):
+        result = line_eq['a'] * point[0] + line_eq['b'] * point[1] + line_eq['c']
+        if result > 0:
+            return False
+        else:
+            return True
+
+    def _is_normal(self, line_eq, normal_eq):
+        """ True if lines are orthogonal
+        """
+        if (line_eq['a'] * normal_eq['a'] + line_eq['a'] * normal_eq['b'] + line_eq['b'] * normal_eq['a'] + line_eq['b'] * normal_eq['b']) == 0:
+            return True
+        else:
+            return False
+
+    def _get_normal(self, line_eq, point):
+        lamb = (-line_eq['c'] - (line_eq['a']*point[0]) - (line_eq['b']*point[1])) / (line_eq['a']*line_eq['a'] + line_eq['b']*line_eq['b'])
+        x = point[0] + lamb * line_eq['a']
+        y = point[1] + lamb * line_eq['b']
+        return self._get_line_eq([point,[x, y]])
+
+    def _is_uninterrupted(self, box, equation, x1, y1, x2, y2):
+        normal = self._draw_line(x1, y1, x2, y2)
+        for point in normal:
+            if box[point[1]][point[0]] == 0:
+                return False
+        return True
+
+    def _draw_line(self, x0, y0, x1, y1):
+        print("{0} {1} {2} {3}".format(x0, y0, x1, y1))
+        points = []
+        rev = reversed
+        if abs(y1 - y0) <= abs(x1 - x0):
+            x0, y0, x1, y1 = y0, x0, y1, x1
+            rev = lambda x: x
+        if x1 < x0:
+            x0, y0, x1, y1 = x1, y1, x0, y0
+        leny = abs(y1 - y0)
+        for i in range(leny + 1):
+            points.append([*rev((round(Fraction(i, leny) * (x1 - x0)) + x0, (1 if y1 > y0 else -1) * i + y0))])
+        return points
+
+    def _split_along_line(self, line_eq, points):
+        points_below = []
+        points_above = []
+        for point in points:
+            if self._is_below_line(line_eq, point):
+                points_below.append(point)
+            else:
+                points_above.append(point)
+        return points_below, points_above
+
+    def max_thickness(self, points, edge, box):
+        max_value = 0
+        value = None
+
+        line_eq = self._get_line_eq(points)
+
+        edge_below, edge_above = self._split_along_line(line_eq, edge)
+
+        normal_eq = self._get_normal(line_eq, edge_above[int(len(edge_above)/2)])
+
+        normal_above_left, normal_above_rigth = self._split_along_line(normal_eq, edge_above)
+        normal_below_left, normal_below_rigth = self._split_along_line(normal_eq, edge_below)
+
+        for a in normal_above_left:
+            for b in normal_below_left:
+                propsed_normal = self._get_line_eq([a, b])
+                if self._is_normal(line_eq, propsed_normal):
+                    if self._is_uninterrupted(box, propsed_normal, a[0], a[1], b[0], b[1]):
+                        value = self._get_len(a, b)
+                        if value > max_value:
+                            max_value = value
+
+
+        for a in normal_above_rigth:
+            for b in normal_below_rigth:
+                propsed_normal = self._get_line_eq([a, b])
+                if self._is_normal(line_eq, propsed_normal):
+                    if self._is_uninterrupted(box, propsed_normal, a[0], a[1], b[0], b[1]):
+                        value = self._get_len(a, b)
+                        if value > max_value:
+                            max_value = value
+
+        return max_value
