@@ -11,10 +11,6 @@ def get_line_eq(points):
     y1 = points[0][1]
     x2 = points[1][0]
     y2 = points[1][1]
-<<<<<<< Updated upstream
-
-=======
->>>>>>> Stashed changes
     return {'a':(y1-y2), 'b':(x2-x1), 'c':(x1*y2-x2*y1)}
 
 
