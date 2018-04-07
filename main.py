@@ -1,19 +1,13 @@
 #!/usr/bin/env python3
 
-from AABBlib import convex_hull
-from AABBlib import max_length
 from AABBlib import max_thickness
-import basic_threshold as bt
+
+from AABBlib import detection
+from AABBlib import threshold
+
 import argparse
 import csv
 import cv2
-import detection
-import otsu
-import blur
-
-
-def get_threshold_by_otsu(img):
-    return otsu.otsu(img)
 
 
 def parse_args():
@@ -29,27 +23,23 @@ def parse_args():
 
 if __name__ == '__main__':
     args = parse_args()
-    img = cv2.imread(args.image_path, 0)    # load as grayscale
+
+    img = cv2.imread(args.image_path, 0)
 
     if args.resize != 100:
         resize_percentage = int(args.resize) / 100
-        img = cv2.resize(img, (int(img.shape[1] * resize_percentage),
-                               int(img.shape[0] * resize_percentage)))
+        img = cv2.resize(img,
+                        (int(img.shape[1] * resize_percentage),
+                         int(img.shape[0] * resize_percentage)))
 
-    img = blur.blur(img)
+    thresh = threshold.Threshold(img)
+    thresh.blur()
+    thresh.otsu()
+    thresh.threshold_img()
 
-    threshold = get_threshold_by_otsu(img)
-    print("threshold is: ", threshold)
+    detector = detection.Detector(thresh.get_img())
 
-    img_thres = bt.threshold(threshold, img)
-    # debug - save img after thresholding
-    # import scipy
-    # scipy.misc.imsave('outputNumpy.jpg', img_thres)
-
-    # mask orig image with thresholded one - see differences
-    # tools.mask_thresh(args.image_path, './threshed_pic.bmp')
-
-    bboxes = detection.detect(img_thres)
+    bboxes = detector.get_bounded_boxes()
 
     box_width = []
     box_height = []
@@ -63,12 +53,12 @@ if __name__ == '__main__':
     k = int((1 / int(args.resize)) * 100)
 
     for bbox in bboxes:
-        edge_list.append(convex_hull.convex_hull(bbox))
+        edge_list.append(detector.convex_hull(bbox))
         box_height.append(bbox.shape[0] * k)
         box_width.append(bbox.shape[1] * k)
 
     for edges in edge_list:
-        max_l, max_p = max_length.max_length(edges)
+        max_l, max_p = detector.max_length(edges)
         max_len.append(max_l * k)
         max_points.append(max_p)
 
@@ -84,4 +74,5 @@ if __name__ == '__main__':
         writer.writerow(['Part #', 'Width', 'Height',
                          'Max Length', 'Thickness'])
         writer.writerows(zipped)
-    cv2.imwrite('thresh.tif', img_thres)    # dump threshed img
+
+    cv2.imwrite('thresh.tif', thresh.get_img())    # dump threshed img
