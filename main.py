@@ -1,4 +1,11 @@
 #!/usr/bin/env python3
+"""
+File: main.py
+Authors: Martin Kopec <xkopec42@gmail.com>
+         Maros Kopec <xkopec44@vutbr.cz>
+         Patrik Segedy <xseged00@vutbr.cz>
+         Tomas Sykora <xsykor25>
+"""
 
 from AABBlib import detection
 from AABBlib import threshold
