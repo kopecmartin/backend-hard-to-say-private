@@ -10,10 +10,9 @@ def _get_border_from_left(row):
 
 def _get_border_from_right(row):
     length = len(row)
-    for i in range(length):
-        index = abs(i - length) - 1
-        if row[index] != 0:
-            return abs(i - length) - 1
+    for i in range(length-1, -1, -1):
+        if row[i] != 0:
+            return i
 
 
 def _get_border_from_top(c, matrix):
@@ -24,10 +23,9 @@ def _get_border_from_top(c, matrix):
 
 def _get_border_from_bottom(c, matrix):
     length = len(matrix)
-    for i in range(0, length):
-        index = abs(i - length) - 1
-        if matrix[index, c] != 0:
-            return index
+    for i in range(length-1, -1, -1):
+        if matrix[i, c] != 0:
+            return i
 
 
 def _append_if_not_in(what, to):
