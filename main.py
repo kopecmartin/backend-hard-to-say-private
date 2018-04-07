@@ -42,7 +42,6 @@ if __name__ == '__main__':
     img_thres = bt.threshold(threshold, img)
     # debug - save img after thresholding
     # import scipy
-    # import scipy
     # scipy.misc.imsave('outputNumpy.jpg', img_thres)
 
     # mask orig image with thresholded one - see differences
@@ -56,6 +55,8 @@ if __name__ == '__main__':
     max_points = []
     edge_list = []
 
+    # calculate a coefficient for changig lengths
+    # based on resize of input picture
     k = int((1 / int(args.resize)) * 100)
 
     for bbox in bboxes:

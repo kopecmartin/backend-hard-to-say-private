@@ -8,7 +8,7 @@ def _get_border_from_left(row):
 
 def _get_border_from_right(row):
     length = len(row)
-    for i in range(length-1, -1, -1):
+    for i in range(length - 1, -1, -1):
         if row[i] != 0:
             return i
 
@@ -21,7 +21,7 @@ def _get_border_from_top(c, matrix):
 
 def _get_border_from_bottom(c, matrix):
     length = len(matrix)
-    for i in range(length-1, -1, -1):
+    for i in range(length - 1, -1, -1):
         if matrix[i, c] != 0:
             return i
 
