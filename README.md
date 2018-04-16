@@ -3,7 +3,7 @@
 
 ## About
 The project was implemented during 24h hackaton competition in Brno organised
-by [UnIT Brno](https://unitbrno.cz/) in .
+by [UnIT Brno](https://unitbrno.cz/) on 6-7.4.2018.
 
 
 ## Task
@@ -35,7 +35,7 @@ the grain is shown and the rest is outside of the image - can't be processed
 6. The grains which are overlapping are processed as one grain.
 
 
-### Prerequisites
+## Prerequisites
 
 - Python 3.6 or higher (but it may work even with older versions of Python 3)
 - pip3
@@ -80,6 +80,9 @@ the grain is shown and the rest is outside of the image - can't be processed
 
 ## Authors
 [Martin Kopec](https://github.com/kopecmartin)
+
 [Maroš Kopec](https://github.com/Madeyro)
+
 [Patrik Segedy](https://github.com/psegedy)
+
 [Tomáš Sýkora](https://github.com/tomassykora)
